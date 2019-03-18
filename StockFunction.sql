@@ -1,0 +1,10 @@
+DECLARE @FromDate DATETIME2(0)
+DECLARE @ToDate   DATETIME2(0)
+
+SET @FromDate = '2000-01-01 08:22:13' 
+SET @ToDate = '2015-03-05 17:56:31'
+
+DECLARE @Seconds INT = DATEDIFF(SECOND, @FromDate, @ToDate)
+DECLARE @Random INT = ROUND(((@Seconds-1) * RAND()), 0)
+
+SELECT DATEADD(SECOND, @Random, @FromDate)
