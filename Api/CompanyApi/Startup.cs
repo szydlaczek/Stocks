@@ -36,6 +36,7 @@ namespace CompanyApi
             {
                 options.SuppressModelStateInvalidFilter = true;
             });
+            services.AddCors();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -57,7 +58,10 @@ namespace CompanyApi
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            app.UseCors(builder =>
+                        builder.WithOrigins("http://localhost:3001")
+                               .AllowAnyHeader()
+                               .AllowAnyMethod());
             app.UseMvc();
         }
     }

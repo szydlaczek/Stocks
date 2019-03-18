@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -23,12 +24,15 @@ namespace CompanyApi.Filters
             HttpStatusCode code = HttpStatusCode.OK;
             var ip = c.HttpContext.Request.HttpContext.Connection.RemoteIpAddress;
             var blockedKey = string.Concat("blocked", "-", ip);
+            var ip_date = string.Concat(ip, "-", "Date");
 
             if (Cache.TryGetValue(blockedKey, out bool entry))
             {
-                code = HttpStatusCode.InternalServerError;
-                c.Result = new BadRequestResult();
+                var date = Cache.Get(ip_date);
+                c.HttpContext.Response.Headers.Add("Blocked-to", date.ToString());
+                c.Result = new BadRequestResult();                
                 c.HttpContext.Response.StatusCode = (int)code;
+                
             }
             else
             if (Cache.TryGetValue(ip, out List<DateTime> entries))
@@ -40,9 +44,13 @@ namespace CompanyApi.Filters
                 else
                 {
                     var cacheEntryOptions = new MemoryCacheEntryOptions()
-                    .SetAbsoluteExpiration(TimeSpan.FromSeconds(60));
+                    .SetAbsoluteExpiration(TimeSpan.FromSeconds(SecondsToBlock));
+
                     Cache.Set(blockedKey, true, cacheEntryOptions);
                     c.Result = new BadRequestResult();
+                    var date = DateTime.Now.AddSeconds(SecondsToBlock);
+                    Cache.Set(ip_date, date, cacheEntryOptions);
+                    c.HttpContext.Response.Headers.Add("Blocked-to", date.ToString());
                 }
             }
             else
