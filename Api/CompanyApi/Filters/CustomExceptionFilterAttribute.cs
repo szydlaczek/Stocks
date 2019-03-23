@@ -25,8 +25,7 @@ namespace CompanyApi.Filters
             context.HttpContext.Response.StatusCode = (int)code;
             context.Result = new JsonResult(new
             {
-                error = new[] { context.Exception.Message },
-                stackTrace = context.Exception.StackTrace
+                error = context.Exception.Message                
             });
         }
     }

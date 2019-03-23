@@ -1,6 +1,7 @@
 ﻿using CompanyApi.Context;
 using CompanyApi.Dtos;
 using CompanyApi.Errors;
+using CompanyApi.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.ObjectModel;
@@ -26,7 +27,7 @@ namespace CompanyApi.Queries.GetStocks
                 .FirstOrDefaultAsync();
 
             if (company is null)
-                throw new NotFoundException(nameof(company), request.CompanyIsin);
+                throw new NotFoundException($"{nameof(Company)} with isin {request.CompanyIsin} doesn't exsists");
 
             var groupedStocks = _context.Stock.AsNoTracking()
                 .Where(d => d.CompanyId == company.CompanyId)
