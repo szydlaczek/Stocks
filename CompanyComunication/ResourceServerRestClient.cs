@@ -43,7 +43,7 @@ namespace CompanyComunication
                     }
                 }
                 step++;
-            } while (step <= 2 && (responseMessage == null || responseMessage?.StatusCode != HttpStatusCode.OK));
+            } while (step <= 10 && (responseMessage == null || responseMessage?.StatusCode != HttpStatusCode.OK));
 
             return await GetResponse();
         }
